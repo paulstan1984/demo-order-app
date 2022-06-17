@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Customer Orders";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Home" asp-action="ImportOrders" method="post">
+
+    <p>
+        Please copy and paste the content of the XML file containing the orders.
+    </p>
+
+    @if (@ViewBag.ValidationErrors.Count > 0)
+    {
+        <h3>There are validation errors</h3>
+        @foreach(var err in @ViewBag.ValidationErrors)
+        {
+            <p style="color:red">@err</p>
+        }
+    }
+
+    <textarea name="XMLContent" style="width:100%; height:300px">@ViewBag.XMLContent</textarea>
+
+    <button type="submit">Send</button>
+</form>

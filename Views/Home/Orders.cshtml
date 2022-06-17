@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Customer Orders";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Home" asp-action="Orders" method="post">
+    <input name="CustomerName" type="text" value="@ViewBag.CustomerName"/>
+
+    <button type="submit">Search</button>
+    <button type="button" onclick="document.forms[0].CustomerName.value = ''">Clear</button>
+</form>
+
+@if(@ViewBag.Orders.Length>0) {
+<table width="100%">
+    <thead>
+        <td>Id</td>
+        <td>Customer Name</td>
+        <td>Customer Email</td>
+        <td align="right">Quantity</td>
+        <td align="right">Size</td>
+        <td>Date Required</td>
+        <td>Notes</td>
+    </thead>
+    @foreach (var order in @ViewBag.Orders)
+    {
+        <tr>
+            <td>@order.Id</td>
+            <td>@order.CustomerName</td>
+            <td>@order.CustomerEmail</td>
+            <td align="right">@order.Quantity</td>
+            <td align="right">@order.Size</td>
+            <td>@order.DateRequired</td>
+            <td>@order.Notes</td>
+        </tr>
+    }
+</table>
+} else {
+    <p>No orders.</p>
+}
