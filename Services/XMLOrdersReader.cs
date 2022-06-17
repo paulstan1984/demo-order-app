@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
@@ -20,19 +21,35 @@ namespace CPSDevExerciseWeb.Services
         }
         public ImportOrderPackage ReadOrders(string inputSource)
         {
+            var retObj = new ImportOrderPackage();
+            retObj.ValidationErrors = new List<string>();
+
             inputSource = ("" + inputSource).Trim();
+
+            XmlSchemaSet schemas = new XmlSchemaSet();
+            schemas.Add("", _configuration.GetSection("Orders")["xsd_file"]);
+
+            XDocument ordersXMLDoc = XDocument.Load(new StringReader(inputSource));
+            bool errors = false;
+            ordersXMLDoc.Validate(schemas, (o, e) =>
+            {
+                retObj.ValidationErrors.Add(e.Message);
+                errors = true;
+            });
+
+            if (errors)
+            {
+                return retObj;
+            }
 
             var serializer = new XmlSerializer(typeof(DocumentElement));
             DocumentElement doc = null;
             using (var reader = XmlReader.Create(new StringReader(inputSource)))
             {
-                //do not have time to remember and search on internet how to validate XML using XSD quick and easy
                 doc = (DocumentElement)serializer.Deserialize(reader);
             }
 
-            var retObj = new ImportOrderPackage();
             retObj.Orders = doc != null ? doc.ToArray() : new Order[] { };
-            retObj.ValidationErrors = new List<string>();
 
             for (int i=0;i< retObj.Orders.Length; i++)
             {
