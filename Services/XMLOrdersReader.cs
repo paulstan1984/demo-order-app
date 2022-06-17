@@ -43,10 +43,10 @@ namespace CPSDevExerciseWeb.Services
             }
 
             var serializer = new XmlSerializer(typeof(DocumentElement));
-            DocumentElement doc = null;
+            DocumentElement? doc = null;
             using (var reader = XmlReader.Create(new StringReader(inputSource)))
             {
-                doc = (DocumentElement)serializer.Deserialize(reader);
+                doc = serializer.Deserialize(reader) as DocumentElement;
             }
 
             retObj.Orders = doc != null ? doc.ToArray() : new Order[] { };
