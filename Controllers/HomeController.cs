@@ -24,8 +24,21 @@ namespace CPSDevExerciseWeb.Controllers
             return View();
         }
 
+        const string HTTP_Header_Name = "Authorization";
+        const string HTTP_Header_Value = "hashkey";
+        bool isLoggedIn()
+        {
+            var authHeader = Request.Headers[HTTP_Header_Name].FirstOrDefault();
+            //return authHeader?.ToLower() == HTTP_Header_Value.ToLower();
+            return true;
+        }
+
         public IActionResult Orders(string CustomerName)
         {
+            if (!isLoggedIn())
+            {
+                return Redirect("Index");
+            }
             ViewBag.CustomerName = string.Empty;
             ViewBag.Orders = new Order[] { };
 
@@ -39,6 +52,11 @@ namespace CPSDevExerciseWeb.Controllers
 
         public IActionResult ImportOrders(string XMLContent)
         {
+            if (!isLoggedIn())
+            {
+                return Redirect("Index");
+            }
+
             ViewBag.ValidationErrors = new List<string>();
             if (Request.Method == "POST")
             {
