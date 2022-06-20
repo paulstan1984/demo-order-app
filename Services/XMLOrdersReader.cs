@@ -54,7 +54,7 @@ namespace CPSDevExerciseWeb.Services
 
         bool ValidateOrdersXML(string inputSource, List<string> erros)
         {
-            bool errorsExist = false;
+            bool isValid = true;
             inputSource = ("" + inputSource).Trim();
 
             XmlSchemaSet schemas = new XmlSchemaSet();
@@ -65,10 +65,10 @@ namespace CPSDevExerciseWeb.Services
             ordersXMLDoc.Validate(schemas, (o, e) =>
             {
                 erros.Add(e.Message);
-                errorsExist = true;
+                isValid = false;
             });
 
-            return errorsExist;
+            return isValid;
         }
 
         Regex emailregex = new Regex("^\\S+@\\S+\\.\\S+$");
