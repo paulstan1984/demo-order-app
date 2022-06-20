@@ -8,9 +8,13 @@
 
     <button type="submit">Search</button>
     <button type="button" onclick="document.forms[0].CustomerName.value = ''">Clear</button>
+    @if (@ViewBag.Orders.Length > 0)
+    {
+        <button onclick="window.print()">Print</button>
+    }
 </form>
 
-@if(@ViewBag.Orders.Length>0) {
+@if(@ViewBag.Orders.Length>0) {        
 <table width="100%">
     <thead>
         <td>Id</td>
