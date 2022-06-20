@@ -21,17 +21,15 @@ namespace CPSDevExerciseWeb.PgSQLRepositories
 
         public Order[] GetCustomerOrders(string CustomerName)
         {
-            if (string.IsNullOrWhiteSpace(CustomerName))
-            {
-                return new Order[] { };
-            }
-
             var query = from o in _context.Orders
-                        where o.CustomerName.ToLower() == CustomerName.ToLower()
-                        orderby o.Id descending
                         select o;
 
-            return query.ToArray();
+            if (!string.IsNullOrWhiteSpace(CustomerName))
+            {
+                query = query.Where(o => o.CustomerName.ToLower() == CustomerName.ToLower());
+            }
+
+            return query.OrderByDescending(o => o.Id).ToArray();
         }
     }
 }

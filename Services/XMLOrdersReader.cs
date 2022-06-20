@@ -75,36 +75,31 @@ namespace CPSDevExerciseWeb.Services
 
         string ValidateOrderCustom(int index, Order order)
         {
-            StringBuilder err = new StringBuilder();
+            var err = new List<string>();
 
             if (string.IsNullOrWhiteSpace(order.CustomerName))
             {
-                err.AppendFormat("Order[{0}]: CustomerName required", index);
+                err.Add("CustomerName required");
             }
 
             if (string.IsNullOrWhiteSpace(order.CustomerEmail))
             {
-                err.AppendFormat("Order[{0}]: CustomerEmail required", index);
+                err.Add("CustomerEmail required");
             }
 
             if (!emailregex.IsMatch(order.CustomerEmail))
             {
-                err.AppendFormat("Order[{0}]: CustomerEmail is not a valid email", index);
+                err.Add("CustomerEmail is not a valid email");
             }
 
             if (order.Quantity % 1000 != 0)
             {
-                err.AppendFormat("Order[{0}]: Quantity must be in multiples of 1000", index);
-            }
-
-            if (order.Quantity % 1000 != 0)
-            {
-                err.AppendFormat("Order[{0}]: Quantity must be in multiples of 1000", index);
+                err.Add("Quantity must be in multiples of 1000");
             }
 
             if(order.Size < (decimal)11.5 || order.Size> 15 || (order.Size * 10) % 5 != 0)
             {
-                err.AppendFormat("Order[{0}]: Size must be 11.5 to 15 including half sizes", index);
+                err.Add("Size must be 11.5 to 15 including half sizes");
             }
 
             DateTime dateLimit = DateTime.Now.Date;
@@ -121,11 +116,16 @@ namespace CPSDevExerciseWeb.Services
 
             if (order.DateRequired.Date < dateLimit)
             {
-                err.AppendFormat("Order[{0}]: Date must be valid and at least 10 working days into the future", index);
+                err.Add("Date must be valid and at least 10 working days into the future");
 
             }
 
-            return err.ToString();
+            if(err.Count > 0)
+            {
+                return string.Format("Order[{0}]: ", index) + string.Join(", ", err);
+            }
+
+            return null;
         }
     }
 }

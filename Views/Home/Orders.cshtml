@@ -4,7 +4,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <form asp-controller="Home" asp-action="Orders" method="post">
-    <input name="CustomerName" type="text" value="@ViewBag.CustomerName"/>
+    <input name="CustomerName" type="text" value="@ViewBag.CustomerName" placeholder="Type the customer name"/>
 
     <button type="submit">Search</button>
     <button type="button" onclick="document.forms[0].CustomerName.value = ''">Clear</button>
