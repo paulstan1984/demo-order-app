@@ -24,37 +24,25 @@ namespace CPSDevExerciseWeb.Services
             var retObj = new ImportOrderPackage();
             retObj.ValidationErrors = new List<string>();
 
-            inputSource = ("" + inputSource).Trim();
-
-            XmlSchemaSet schemas = new XmlSchemaSet();
-            schemas.Add("", _configuration.GetSection("Orders")["xsd_file"]);
-
-            XDocument ordersXMLDoc = XDocument.Load(new StringReader(inputSource));
-            bool errors = false;
-            ordersXMLDoc.Validate(schemas, (o, e) =>
-            {
-                retObj.ValidationErrors.Add(e.Message);
-                errors = true;
-            });
-
-            if (errors)
+            if (!ValidateOrdersXML(inputSource, retObj.ValidationErrors))
             {
                 return retObj;
             }
 
             var serializer = new XmlSerializer(typeof(DocumentElement));
-            DocumentElement? doc = null;
+            DocumentElement? ordersDoc = null;
             using (var reader = XmlReader.Create(new StringReader(inputSource)))
             {
-                doc = serializer.Deserialize(reader) as DocumentElement;
+                ordersDoc = serializer.Deserialize(reader) as DocumentElement;
             }
 
-            retObj.Orders = doc != null ? doc.ToArray() : new Order[] { };
+            retObj.Orders = ordersDoc != null ? ordersDoc.ToArray() : new Order[] { };
 
             for (int i=0;i< retObj.Orders.Length; i++)
             {
                 var order = retObj.Orders[i];
-                var err = ValidateOrder(i, order);
+                //additional validation
+                var err = ValidateOrderCustom(i, order);
                 if (!string.IsNullOrEmpty(err))
                 {
                     retObj.ValidationErrors.Add(err);
@@ -64,9 +52,28 @@ namespace CPSDevExerciseWeb.Services
             return retObj;
         }
 
+        bool ValidateOrdersXML(string inputSource, List<string> erros)
+        {
+            bool errorsExist = false;
+            inputSource = ("" + inputSource).Trim();
+
+            XmlSchemaSet schemas = new XmlSchemaSet();
+            schemas.Add("", _configuration.GetSection("Orders")["xsd_file"]);
+
+            XDocument ordersXMLDoc = XDocument.Load(new StringReader(inputSource));
+
+            ordersXMLDoc.Validate(schemas, (o, e) =>
+            {
+                erros.Add(e.Message);
+                errorsExist = true;
+            });
+
+            return errorsExist;
+        }
+
         Regex emailregex = new Regex("^\\S+@\\S+\\.\\S+$");
 
-        string ValidateOrder(int index, Order order)
+        string ValidateOrderCustom(int index, Order order)
         {
             StringBuilder err = new StringBuilder();
 
